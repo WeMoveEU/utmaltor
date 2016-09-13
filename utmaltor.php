@@ -125,9 +125,11 @@ function utmaltor_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
 
 function utmaltor_civicrm_pre($op, $objectName, $id, &$params) {
   if ($objectName == 'TrackableURL' and $op == 'create') {
-    $params['url'] = alterCampaign($params['url'], $params['mailing_id']);
-    $params['url'] = alterSource($params['url']);
-    $params['url'] = alterMedium($params['url']);
+//    urls have to be changed directly in body of email
+//    in other hand on each call civicrm will be created new trackable url
+//    $params['url'] = alterCampaign($params['url'], $params['mailing_id']);
+//    $params['url'] = alterSource($params['url']);
+//    $params['url'] = alterMedium($params['url']);
   }
 }
 
