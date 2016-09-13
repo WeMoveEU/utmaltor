@@ -122,6 +122,7 @@ function utmaltor_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
   _utmaltor_civix_civicrm_alterSettingsFolders($metaDataFolders);
 }
 
+
 function utmaltor_civicrm_pre($op, $objectName, $id, &$params) {
   if ($objectName == 'TrackableURL' and $op == 'create') {
     // todo alter url if it doesn't have utm_params
