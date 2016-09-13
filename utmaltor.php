@@ -137,7 +137,12 @@ function utmaltor_civicrm_pre($op, $objectName, $id, &$params) {
   }
 }
 
-
+function alterUrl($url, $mailingId) {
+  $url = alterCampaign($url, $mailingId);
+  $url = alterSource($url);
+  $url = alterMedium($url);
+  return $url;
+}
 
 function alterCampaign($url, $mailingId) {
   $key = 'utm_campaign';
