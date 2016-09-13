@@ -131,6 +131,10 @@ function utmaltor_civicrm_pre($op, $objectName, $id, &$params) {
 //    $params['url'] = alterSource($params['url']);
 //    $params['url'] = alterMedium($params['url']);
   }
+  // fixme remove restriction to specific mailing
+  if ($objectName == 'Mailing' and $op == 'edit' && $id == 3085) {
+    CRM_Core_Error::debug_var('Mailing edit $params', $params['body_html']);
+  }
 }
 
 
