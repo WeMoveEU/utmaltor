@@ -125,6 +125,55 @@ function utmaltor_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
 
 function utmaltor_civicrm_pre($op, $objectName, $id, &$params) {
   if ($objectName == 'TrackableURL' and $op == 'create') {
-    // todo alter url if it doesn't have utm_params
+    $params['url'] = alterCampaign($params['url'], $params['mailing_id']);
+    $params['url'] = alterSource($params['url']);
+    $params['url'] = alterMedium($params['url']);
   }
+}
+
+
+
+function alterCampaign($url, $mailingId) {
+  $key = 'utm_campaign';
+  $value = 'civimail-'.$mailingId;
+  return setKey($url, $key, $value);
+}
+
+function alterSource($url) {
+  $key = 'utm_source';
+  $value = 'civimail';
+  return setKey($url, $key, $value);
+}
+
+function alterMedium($url) {
+  $key = 'utm_medium';
+  $value = 'email';
+  return setKey($url, $key, $value);
+}
+
+function setKey($url, $key, $value) {
+  if ((strpos($url, $key) === FALSE) || (strpos($url, $key) !== FALSE && !getValue($url, $key))) {
+    return setValue($url, $key, $value);
+  }
+  return $url;
+}
+
+function getValue($url, $key) {
+  $query = parse_url($url, PHP_URL_QUERY);
+  parse_str($query, $arr);
+  if (array_key_exists($key, $arr)) {
+    return trim($arr[$key]);
+  }
+  return "";
+}
+
+function setValue($url, $key, $value) {
+  $urlParts = parse_url($url);
+  if (array_key_exists('query', $urlParts)) {
+    parse_str($urlParts['query'], $query);
+  } else {
+    $query = array();
+  }
+  $urlParts['query'] = http_build_query($query ? array_merge($query, array($key => $value)) : array($key => $value));
+  return $urlParts['scheme'] . '://' . $urlParts['host'] . $urlParts['path'] . '?' . $urlParts['query'];
 }
