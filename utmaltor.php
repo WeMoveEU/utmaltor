@@ -197,6 +197,9 @@ function setValue($url, $key, $value) {
   } else {
     $query = array();
   }
+  if (!array_key_exists('path', $urlParts)) {
+    $urlParts['path'] = '/';
+  }
   $urlParts['query'] = http_build_query($query ? array_merge($query, array($key => $value)) : array($key => $value));
   return $urlParts['scheme'] . '://' . $urlParts['host'] . $urlParts['path'] . '?' . $urlParts['query'];
 }
