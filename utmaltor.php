@@ -141,8 +141,11 @@ function utmaltor_civicrm_pre($op, $objectName, $id, &$params) {
         $urls[$url] = alterUrl($url, $id);
       }
     }
-
-    // todo change urls in body
+    foreach ($urls as $old => $new) {
+      if ($old != $new) {
+        $params['body_html'] = str_replace('href="'.$old.'"', 'href="'.$new.'"', $params['body_html']);
+      }
+    }
   }
 }
 
