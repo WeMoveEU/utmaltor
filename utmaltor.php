@@ -124,16 +124,8 @@ function utmaltor_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
 
 
 function utmaltor_civicrm_pre($op, $objectName, $id, &$params) {
-  if ($objectName == 'TrackableURL' and $op == 'create') {
-//    urls have to be changed directly in body of email
-//    in other hand on each call civicrm will be created new trackable url
-//    $params['url'] = alterCampaign($params['url'], $params['mailing_id']);
-//    $params['url'] = alterSource($params['url']);
-//    $params['url'] = alterMedium($params['url']);
-  }
   // fixme remove restriction to specific mailing
   if ($objectName == 'Mailing' and $op == 'edit' && $id == 3085) {
-    CRM_Core_Error::debug_var('Mailing edit $params', $params['body_html']);
     preg_match_all('/href="([^\s"]+)/imu', $params['body_html'], $matches);
     $urls = array();
     if (is_array($matches[1]) && count($matches[1])) {
@@ -201,5 +193,11 @@ function setValue($url, $key, $value) {
     $urlParts['path'] = '/';
   }
   $urlParts['query'] = http_build_query($query ? array_merge($query, array($key => $value)) : array($key => $value));
-  return $urlParts['scheme'] . '://' . $urlParts['host'] . $urlParts['path'] . '?' . $urlParts['query'];
+  $newUrl = $urlParts['scheme'] . '://' . $urlParts['host'] . $urlParts['path'] . '?' . $urlParts['query'];
+  $tokens = array(
+    '%7B' => '{',
+    '%7D' => '}',
+  );
+  $newUrl = str_replace(array_keys($tokens), array_values($tokens), $newUrl);
+  return $newUrl;
 }
