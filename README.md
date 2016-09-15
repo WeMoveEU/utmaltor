@@ -9,3 +9,5 @@ This extension adds hook on Mailing edit operation and altering UTM params (only
 * utm_campaign = civimail-XXX, where XXX = mailing_id
 * utm_source = civimail
 * utm_medium = email
+
+Only HTML content is changed and only urls in **href** attribute.
