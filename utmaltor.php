@@ -125,9 +125,9 @@ function utmaltor_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
 
 function utmaltor_civicrm_pre($op, $objectName, $id, &$params) {
   // fixme remove restriction to specific mailing
-  if ($objectName == 'Mailing' and $op == 'edit' && $id == 3128) {
+  if ($objectName == 'Mailing' and $op == 'edit' && in_array($id, array(3136, 3137, 3138, 3148))) {
     // fixme better way to filter by own domain
-    preg_match_all('/href="([^\s"]+wemove\.eu[^\s"]*)/imu', $params['body_html'], $matches);
+    preg_match_all('/href="([^\s"]+(wemove\.eu|democracyforsale\.eu)[^\s"]*)/imu', $params['body_html'], $matches);
     $urls = array();
     if (is_array($matches[1]) && count($matches[1])) {
       foreach ($matches[1] as $url) {
