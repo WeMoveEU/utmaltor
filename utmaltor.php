@@ -151,7 +151,11 @@ function alterUrl($url, $mailingId) {
 
 function alterCampaign($url, $mailingId) {
   $key = 'utm_campaign';
-  $value = 'civimail-'.$mailingId;
+  $language = '';
+  if ($campaignId = getCampaign($mailingId)) {
+    $language = '_' . getLanguage($campaignId);
+  }
+  $value = date('Ymd').$language;
   return setKey($url, $key, $value);
 }
 
