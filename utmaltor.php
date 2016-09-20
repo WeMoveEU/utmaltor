@@ -202,3 +202,21 @@ function setValue($url, $key, $value) {
   $newUrl = str_replace(array_keys($tokens), array_values($tokens), $newUrl);
   return $newUrl;
 }
+
+function getCampaign($mailingId) {
+  $result = civicrm_api3('Mailing', 'get', array(
+    'sequential' => 1,
+    'return' => "campaign_id",
+    'id' => $mailingId,
+  ));
+  if ($result['count'] == 1) {
+    return (int)$result['values'][0]['campaign_id'];
+  }
+  return 0;
+}
+
+function getLanguage($campaignId) {
+  $campaign = new CRM_Speakcivi_Logic_Campaign($campaignId);
+  $locale = $campaign->getLanguage();
+  return strtoupper(substr($locale, 0, 2));
+}
