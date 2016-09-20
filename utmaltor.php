@@ -144,7 +144,7 @@ function utmaltor_civicrm_pre($op, $objectName, $id, &$params) {
 
 function alterUrl($url, $mailingId) {
   $url = alterCampaign($url, $mailingId);
-  $url = alterSource($url);
+  $url = alterSource($url, $mailingId);
   $url = alterMedium($url);
   return $url;
 }
@@ -159,9 +159,9 @@ function alterCampaign($url, $mailingId) {
   return setKey($url, $key, $value);
 }
 
-function alterSource($url) {
+function alterSource($url, $mailingId) {
   $key = 'utm_source';
-  $value = 'civimail';
+  $value = 'civimail-'.$mailingId;
   return setKey($url, $key, $value);
 }
 
