@@ -162,16 +162,19 @@ function alterCampaign($url, $mailingId) {
 function alterSource($url, $mailingId) {
   $key = 'utm_source';
   $value = 'civimail-'.$mailingId;
-  return setKey($url, $key, $value);
+  return setKey($url, $key, $value, TRUE);
 }
 
 function alterMedium($url) {
   $key = 'utm_medium';
   $value = 'email';
-  return setKey($url, $key, $value);
+  return setKey($url, $key, $value, TRUE);
 }
 
-function setKey($url, $key, $value) {
+function setKey($url, $key, $value, $override = FALSE) {
+  if ($override) {
+    return setValue($url, $key, $value);
+  }
   if ((strpos($url, $key) === FALSE) || (strpos($url, $key) !== FALSE && !getValue($url, $key))) {
     return setValue($url, $key, $value);
   }
