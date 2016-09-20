@@ -124,8 +124,7 @@ function utmaltor_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
 
 
 function utmaltor_civicrm_pre($op, $objectName, $id, &$params) {
-  // fixme remove restriction to specific mailing
-  if ($objectName == 'Mailing' and $op == 'edit' && in_array($id, array(3136, 3137, 3138, 3148))) {
+  if ($objectName == 'Mailing' and $op == 'edit') {
     // fixme better way to filter by own domain
     preg_match_all('/href="([^\s"]+(wemove\.eu|democracyforsale\.eu)[^\s"]*)/imu', $params['body_html'], $matches);
     $urls = array();
@@ -144,30 +143,37 @@ function utmaltor_civicrm_pre($op, $objectName, $id, &$params) {
 
 function alterUrl($url, $mailingId) {
   $url = alterCampaign($url, $mailingId);
-  $url = alterSource($url);
+  $url = alterSource($url, $mailingId);
   $url = alterMedium($url);
   return $url;
 }
 
 function alterCampaign($url, $mailingId) {
   $key = 'utm_campaign';
-  $value = 'civimail-'.$mailingId;
+  $language = '';
+  if ($campaignId = getCampaign($mailingId)) {
+    $language = '_' . getLanguage($campaignId);
+  }
+  $value = date('Ymd').$language;
   return setKey($url, $key, $value);
 }
 
-function alterSource($url) {
+function alterSource($url, $mailingId) {
   $key = 'utm_source';
-  $value = 'civimail';
-  return setKey($url, $key, $value);
+  $value = 'civimail-'.$mailingId;
+  return setKey($url, $key, $value, TRUE);
 }
 
 function alterMedium($url) {
   $key = 'utm_medium';
   $value = 'email';
-  return setKey($url, $key, $value);
+  return setKey($url, $key, $value, TRUE);
 }
 
-function setKey($url, $key, $value) {
+function setKey($url, $key, $value, $override = FALSE) {
+  if ($override) {
+    return setValue($url, $key, $value);
+  }
   if ((strpos($url, $key) === FALSE) || (strpos($url, $key) !== FALSE && !getValue($url, $key))) {
     return setValue($url, $key, $value);
   }
@@ -201,4 +207,22 @@ function setValue($url, $key, $value) {
   );
   $newUrl = str_replace(array_keys($tokens), array_values($tokens), $newUrl);
   return $newUrl;
+}
+
+function getCampaign($mailingId) {
+  $result = civicrm_api3('Mailing', 'get', array(
+    'sequential' => 1,
+    'return' => "campaign_id",
+    'id' => $mailingId,
+  ));
+  if ($result['count'] == 1) {
+    return (int)$result['values'][0]['campaign_id'];
+  }
+  return 0;
+}
+
+function getLanguage($campaignId) {
+  $campaign = new CRM_Speakcivi_Logic_Campaign($campaignId);
+  $locale = $campaign->getLanguage();
+  return strtoupper(substr($locale, 0, 2));
 }
