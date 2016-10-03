@@ -126,7 +126,7 @@ function utmaltor_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
 function utmaltor_civicrm_pre($op, $objectName, $id, &$params) {
   if ($objectName == 'Mailing' and $op == 'edit') {
     // fixme better way to filter by own domain
-    preg_match_all('/href="([^\s"]+(wemove\.eu|democracyforsale\.eu)[^\s"]*)/imu', $params['body_html'], $matches);
+    preg_match_all('/href="(http[^\s"]+(wemove\.eu|democracyforsale\.eu)[^\s"]*)/imu', $params['body_html'], $matches);
     $urls = array();
     if (is_array($matches[1]) && count($matches[1])) {
       foreach ($matches[1] as $url) {
