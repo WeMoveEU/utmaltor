@@ -204,7 +204,8 @@ function setValue($url, $key, $value) {
   $tokens = array(
     '%7B' => '{',
     '%7D' => '}',
-    '{contact_checksum}=' => '{contact_checksum}', // #3 Token {contact_checksum} breaks down links
+    '{contact_checksum}=' => '{contact.checksum}', // #3 Token {contact_checksum} breaks down links
+    '{contact.checksum}=' => '{contact.checksum}', // #3 Token {contact_checksum} breaks down links
   );
   $newUrl = str_replace(array_keys($tokens), array_values($tokens), $newUrl);
   return $newUrl;
