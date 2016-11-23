@@ -134,8 +134,7 @@ function utmaltor_civicrm_pre($op, $objectName, $id, &$params) {
       CRM_Utmaltor_Logic_Hooks::alterSmartyVariables($op, $objectName, $id, $params, $utmSmarty->variables);
       $utmSmarty->assign();
       foreach ($matches[1] as $url) {
-        $urlTemplate = CRM_Utmaltor_Logic_Alter::url($url);
-        $urls[$url] = $utmSmarty->parse($urlTemplate);
+        $urls[$url] = CRM_Utmaltor_Logic_Alter::url($url, $utmSmarty);
       }
     }
     foreach ($urls as $old => $new) {

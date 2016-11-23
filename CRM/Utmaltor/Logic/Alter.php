@@ -2,28 +2,31 @@
 
 class CRM_Utmaltor_Logic_Alter {
 
-  public static function url($url) {
-    $url = self::alterSource($url);
-    $url = self::alterMedium($url);
-    $url = self::alterCampaign($url);
+  public static function url($url, $smarty) {
+    $url = self::alterSource($url, $smarty);
+    $url = self::alterMedium($url, $smarty);
+    $url = self::alterCampaign($url, $smarty);
     return $url;
   }
 
-  function alterSource($url) {
+  function alterSource($url, $smarty) {
     $key = 'utm_source';
     $value = CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_source');
+    $value = $smarty->parse($value);
     return self::setKey($url, $key, $value, TRUE);
   }
 
-  function alterMedium($url) {
+  function alterMedium($url, $smarty) {
     $key = 'utm_medium';
     $value = CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_medium');
+    $value = $smarty->parse($value);
     return self::setKey($url, $key, $value, TRUE);
   }
 
-  function alterCampaign($url) {
+  function alterCampaign($url, $smarty) {
     $key = 'utm_campaign';
     $value = CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_campaign');
+    $value = $smarty->parse($value);
     return self::setKey($url, $key, $value);
   }
 
