@@ -130,8 +130,12 @@ function utmaltor_civicrm_pre($op, $objectName, $id, &$params) {
     preg_match_all($pattern, $params['body_html'], $matches);
     $urls = array();
     if (is_array($matches[1]) && count($matches[1])) {
+      $utmSmarty = new CRM_Utmaltor_Logic_Smarty($params);
+      CRM_Utmaltor_Logic_Hooks::alterSmartyVariables($op, $objectName, $id, $params, $utmSmarty->variables);
+      $utmSmarty->assign();
       foreach ($matches[1] as $url) {
-        $urls[$url] = alterUrl($url, $id);
+        $urlTemplate = CRM_Utmaltor_Logic_Alter::url($url);
+        $urls[$url] = $utmSmarty->parse($urlTemplate);
       }
     }
     foreach ($urls as $old => $new) {
@@ -142,76 +146,7 @@ function utmaltor_civicrm_pre($op, $objectName, $id, &$params) {
   }
 }
 
-function alterUrl($url, $mailingId) {
-  $url = alterCampaign($url, $mailingId);
-  $url = alterSource($url, $mailingId);
-  $url = alterMedium($url);
-  return $url;
-}
-
-function alterCampaign($url, $mailingId) {
-  $key = 'utm_campaign';
-  $language = '';
-  if ($campaignId = getCampaign($mailingId)) {
-    $language = '_' . getLanguage($campaignId);
-  }
-  $value = date('Ymd').$language;
-  return setKey($url, $key, $value);
-}
-
-function alterSource($url, $mailingId) {
-  $key = 'utm_source';
-  $value = 'civimail-'.$mailingId;
-  return setKey($url, $key, $value, TRUE);
-}
-
-function alterMedium($url) {
-  $key = 'utm_medium';
-  $value = 'email';
-  return setKey($url, $key, $value, TRUE);
-}
-
-function setKey($url, $key, $value, $override = FALSE) {
-  if ($override) {
-    return setValue($url, $key, $value);
-  }
-  if ((strpos($url, $key) === FALSE) || (strpos($url, $key) !== FALSE && !getValue($url, $key))) {
-    return setValue($url, $key, $value);
-  }
-  return $url;
-}
-
-function getValue($url, $key) {
-  $query = parse_url($url, PHP_URL_QUERY);
-  parse_str($query, $arr);
-  if (array_key_exists($key, $arr)) {
-    return trim($arr[$key]);
-  }
-  return "";
-}
-
-function setValue($url, $key, $value) {
-  $urlParts = parse_url($url);
-  if (array_key_exists('query', $urlParts)) {
-    parse_str($urlParts['query'], $query);
-  } else {
-    $query = array();
-  }
-  if (!array_key_exists('path', $urlParts)) {
-    $urlParts['path'] = '/';
-  }
-  $urlParts['query'] = http_build_query($query ? array_merge($query, array($key => $value)) : array($key => $value));
-  $newUrl = $urlParts['scheme'] . '://' . $urlParts['host'] . $urlParts['path'] . '?' . $urlParts['query'];
-  $tokens = array(
-    '%7B' => '{',
-    '%7D' => '}',
-    '{contact_checksum}=' => '{contact.checksum}', // #3 Token {contact_checksum} breaks down links
-    '{contact.checksum}=' => '{contact.checksum}', // #3 Token {contact_checksum} breaks down links
-  );
-  $newUrl = str_replace(array_keys($tokens), array_values($tokens), $newUrl);
-  return $newUrl;
-}
-
+// todo move to separate extension
 function getCampaign($mailingId) {
   $result = civicrm_api3('Mailing', 'get', array(
     'sequential' => 1,
@@ -224,6 +159,7 @@ function getCampaign($mailingId) {
   return 0;
 }
 
+// todo move to separate extension
 function getLanguage($campaignId) {
   $campaign = new CRM_Speakcivi_Logic_Campaign($campaignId);
   $locale = $campaign->getLanguage();
