@@ -29,10 +29,10 @@ class CRM_Utmaltor_Logic_Alter {
 
   function setKey($url, $key, $value, $override = FALSE) {
     if ($override) {
-      return setValue($url, $key, $value);
+      return self::setValue($url, $key, $value);
     }
-    if ((strpos($url, $key) === FALSE) || (strpos($url, $key) !== FALSE && !getValue($url, $key))) {
-      return setValue($url, $key, $value);
+    if ((strpos($url, $key) === FALSE) || (strpos($url, $key) !== FALSE && !self::getValue($url, $key))) {
+      return self::setValue($url, $key, $value);
     }
     return $url;
   }
