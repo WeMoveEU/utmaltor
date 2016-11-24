@@ -13,21 +13,24 @@ class CRM_Utmaltor_Logic_Alter {
     $key = 'utm_source';
     $value = CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_source');
     $value = $smarty->parse($value);
-    return self::setKey($url, $key, $value, TRUE);
+    $override = (boolean)CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_source_override');
+    return self::setKey($url, $key, $value, $override);
   }
 
   function alterMedium($url, $smarty) {
     $key = 'utm_medium';
     $value = CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_medium');
     $value = $smarty->parse($value);
-    return self::setKey($url, $key, $value, TRUE);
+    $override = (boolean)CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_medium_override');
+    return self::setKey($url, $key, $value, $override);
   }
 
   function alterCampaign($url, $smarty) {
     $key = 'utm_campaign';
     $value = CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_campaign');
     $value = $smarty->parse($value);
-    return self::setKey($url, $key, $value);
+    $override = (boolean)CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_campaign_override');
+    return self::setKey($url, $key, $value, $override);
   }
 
   function setKey($url, $key, $value, $override = FALSE) {
