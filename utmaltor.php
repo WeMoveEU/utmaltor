@@ -131,8 +131,6 @@ function utmaltor_civicrm_pre($op, $objectName, $id, &$params) {
     $urls = array();
     if (is_array($matches[1]) && count($matches[1])) {
       $utmSmarty = new CRM_Utmaltor_Logic_Smarty($params);
-      CRM_Utmaltor_Logic_Hooks::alterSmartyVariables($op, $objectName, $id, $params, $utmSmarty->variables);
-      $utmSmarty->assign();
       foreach ($matches[1] as $url) {
         $urls[$url] = CRM_Utmaltor_Logic_Alter::url($url, $utmSmarty);
       }
@@ -143,24 +141,4 @@ function utmaltor_civicrm_pre($op, $objectName, $id, &$params) {
       }
     }
   }
-}
-
-// todo move to separate extension
-function getCampaign($mailingId) {
-  $result = civicrm_api3('Mailing', 'get', array(
-    'sequential' => 1,
-    'return' => "campaign_id",
-    'id' => $mailingId,
-  ));
-  if ($result['count'] == 1) {
-    return (int)$result['values'][0]['campaign_id'];
-  }
-  return 0;
-}
-
-// todo move to separate extension
-function getLanguage($campaignId) {
-  $campaign = new CRM_Speakcivi_Logic_Campaign($campaignId);
-  $locale = $campaign->getLanguage();
-  return strtoupper(substr($locale, 0, 2));
 }
