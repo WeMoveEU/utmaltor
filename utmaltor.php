@@ -126,7 +126,8 @@ function utmaltor_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
 function utmaltor_civicrm_pre($op, $objectName, $id, &$params) {
   if ($objectName == 'Mailing' and $op == 'edit') {
     $domains = CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_domains');
-    $pattern = '/href="(http[^\s"]+(' . preg_quote($domains) . ')[^\s"]*)/imu';
+    $domains = str_replace('.', '\.', $domains);
+    $pattern = '/href="(http[^\s"]+(' . $domains . ')[^\s"]*)/imu';
     preg_match_all($pattern, $params['body_html'], $matches);
     $urls = array();
     if (is_array($matches[1]) && count($matches[1])) {
