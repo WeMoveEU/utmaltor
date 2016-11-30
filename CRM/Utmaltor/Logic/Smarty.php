@@ -6,7 +6,16 @@ class CRM_Utmaltor_Logic_Smarty {
 
   private $smarty = null;
 
-  public function __construct($params) {
+  private static $instance = false;
+
+  public static function singleton($params) {
+    if (self::$instance == false) {
+      self::$instance = new CRM_Utmaltor_Logic_Smarty($params);
+    }
+    return self::$instance;
+  }
+
+  private function __construct($params) {
     $this->variables['mailing_id'] = $params['id'];
     $this->variables['campaign_id'] = $params['campaign_id'];
     $this->variables['campaign_lang'] = $this->getLanguage($params['campaign_id']);

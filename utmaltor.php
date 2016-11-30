@@ -131,7 +131,7 @@ function utmaltor_civicrm_pre($op, $objectName, $id, &$params) {
     preg_match_all($pattern, $params['body_html'], $matches);
     $urls = array();
     if (is_array($matches[1]) && count($matches[1])) {
-      $utmSmarty = new CRM_Utmaltor_Logic_Smarty($params);
+      $utmSmarty = CRM_Utmaltor_Logic_Smarty::singleton($params);
       foreach ($matches[1] as $url) {
         $urls[$url] = CRM_Utmaltor_Logic_Alter::url($url, $utmSmarty);
       }
