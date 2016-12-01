@@ -143,3 +143,15 @@ function utmaltor_civicrm_pre($op, $objectName, $id, &$params) {
     }
   }
 }
+
+
+function utmaltor_civicrm_alterUrl($url, $params) {
+  $utmSmarty = CRM_Utmaltor_Logic_Smarty::singleton($params);
+  $re = '/href="(.*)"/';
+  if (preg_match($re, $url, $urlMatches)) {
+    $url = CRM_Utmaltor_Logic_Alter::url($urlMatches[1], $utmSmarty);
+    $url = "href='" . $url . "'";
+  } else {
+    $url = CRM_Utmaltor_Logic_Alter::url($url, $utmSmarty);
+  }
+}
