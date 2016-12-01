@@ -145,7 +145,7 @@ function utmaltor_civicrm_pre($op, $objectName, $id, &$params) {
 }
 
 
-function utmaltor_civicrm_alterUrl($url, $params) {
+function utmaltor_civicrm_alterUrl(&$url, $params) {
   $utmSmarty = CRM_Utmaltor_Logic_Smarty::singleton($params);
   $re = '/href="(.*)"/';
   if (preg_match($re, $url, $urlMatches)) {
