@@ -23,7 +23,20 @@ It's possible to use variables in [Smarty](http://www.smarty.net) format.
 * `{$campaign_id}`
 * `{$data}` - current date, example with modifier: `{$date|date_format:"%Y-%m-%d"}`
 
+## UTM in footer
+
+This feature works based on not published hook `hook_civicrm_alterUrl`, yet.
+
+Required configuration for CKEditor:
+
+* Open file `sites/default/files/civicrm/persist/crm-ckeditor-config.js`
+* Add new params:
+    * `config.basicEntities = false;`
+    * `config.entities = false;`
+    * `config.forceSimpleAmpersand = true;`
+
+This is a static file. Check your caching configuration on web server.
+
 ## Disclaimer
 
 * Only HTML content is changed and only urls in **href** attribute.
-* This extension doesn't touch links from footer, yet.
