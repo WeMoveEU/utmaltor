@@ -147,11 +147,25 @@ function utmaltor_civicrm_pre($op, $objectName, $id, &$params) {
 
 function utmaltor_civicrm_alterUrl(&$url, $params) {
   $utmSmarty = CRM_Utmaltor_Logic_Smarty::singleton($params);
-  $re = '/href="(.*)"/';
+  $domains = CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_domains');
+  $domains = str_replace('.', '\.', $domains);
+
+  // our links from text version
+  $re = '/(http[^\s"]+(' . $domains . ')[^\s"]*)/imu';
   if (preg_match($re, $url, $urlMatches)) {
-    $url = CRM_Utmaltor_Logic_Alter::url($urlMatches[1], $utmSmarty);
-    $url = "href='" . $url . "'";
-  } else {
-    $url = CRM_Utmaltor_Logic_Alter::url($url, $utmSmarty);
+    $url1 = CRM_Utmaltor_Logic_Alter::url($urlMatches[1], $utmSmarty);
+  }
+
+  // our links from html version
+  $re = '/href="(http[^\s"]+(' . $domains . ')[^\s"]*)/imu';
+  if (preg_match($re, $url, $urlMatches)) {
+    $url2 = CRM_Utmaltor_Logic_Alter::url($urlMatches[1], $utmSmarty);
+    $url2 = "href='" . $url2 . "'";
+  }
+
+  if ($url2) {
+    $url = $url2;
+  } elseif ($url1) {
+    $url = $url1;
   }
 }
