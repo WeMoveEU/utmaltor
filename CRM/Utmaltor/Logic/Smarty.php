@@ -6,6 +6,8 @@ class CRM_Utmaltor_Logic_Smarty {
 
   private $smarty = null;
 
+  private $smartyCache;
+
   private static $instance = false;
 
   private static $instanceParams = array();
@@ -23,7 +25,9 @@ class CRM_Utmaltor_Logic_Smarty {
     if (empty(self::$instanceParams)) {
       return true;
     }
-    if (self::$instanceParams == $params) {
+    /* Assumption: this class uses smarty only with variables listed in $variables */
+    if (self::$instanceParams['id'] == $params['id'] 
+        && self::$instanceParams['campaign_id'] == $params['campaign_id']) {
       return false;
     }
     return true;
@@ -34,6 +38,7 @@ class CRM_Utmaltor_Logic_Smarty {
     $this->variables['campaign_id'] = $params['campaign_id'];
     $this->variables['campaign_lang'] = $this->getLanguage($params['campaign_id']);
     $this->variables['date'] = date('YmdHis');
+    $this->smartyCache = array();
     $this->smarty = CRM_Core_Smarty::singleton();
     $this->assign();
   }
@@ -45,7 +50,10 @@ class CRM_Utmaltor_Logic_Smarty {
   }
 
   public function parse($urlTemplate) {
-    return $this->smarty->fetch('string:' . $urlTemplate);
+    if (!isset($this->smartyCache[$urlTemplate])) {
+      $this->smartyCache[$urlTemplate] = $this->smarty->fetch('string:' . $urlTemplate);
+    }
+    return $this->smartyCache[$urlTemplate];
   }
 
   public function getLanguage($campaignId) {
