@@ -3,10 +3,15 @@
 class CRM_Utmaltor_Logic_Alter {
 
   public static function url($url, $smarty) {
+    $url = self::fixUrl($url);
     $url = self::alterSource($url, $smarty);
     $url = self::alterMedium($url, $smarty);
     $url = self::alterCampaign($url, $smarty);
     return $url;
+  }
+
+  function fixUrl($url) {
+    return str_replace('&amp;', '&', $url);
   }
 
   function alterSource($url, $smarty) {
