@@ -13,21 +13,22 @@ class CRM_Utmaltor_Form_Settings extends CRM_Core_Form {
   private $settings = array();
 
 
-  function buildQuickForm() {
+  public function buildQuickForm() {
     $settings = $this->getFormSettings();
     foreach ($settings as $name => $setting) {
       if (isset($setting['quick_form_type'])) {
         $add = 'add' . $setting['quick_form_type'];
         if ($add == 'addElement') {
-          $this->$add($setting['html_type'], $name, ts($setting['title']), CRM_Utils_Array::value('html_attributes', $setting, array ()));
-        } else {
+          $this->$add($setting['html_type'], $name, ts($setting['title']), CRM_Utils_Array::value('html_attributes', $setting, array()));
+        }
+        else {
           $this->$add($name, ts($setting['title']));
         }
         $this->assign("{$setting['description']}_description", ts('description'));
       }
     }
     $this->addButtons(array(
-      array (
+      array(
         'type' => 'submit',
         'name' => ts('Submit'),
         'isDefault' => TRUE,
@@ -38,7 +39,7 @@ class CRM_Utmaltor_Form_Settings extends CRM_Core_Form {
   }
 
 
-  function postProcess() {
+  public function postProcess() {
     $this->submittedValues = $this->exportValues();
     $this->saveSettings();
     parent::postProcess();
@@ -50,7 +51,7 @@ class CRM_Utmaltor_Form_Settings extends CRM_Core_Form {
    *
    * @return array (string)
    */
-  function getRenderableElementNames() {
+  private function getRenderableElementNames() {
     $elementNames = array();
     foreach ($this->_elements as $element) {
       $label = $element->getLabel();
@@ -67,7 +68,7 @@ class CRM_Utmaltor_Form_Settings extends CRM_Core_Form {
    *
    * @return array
    */
-  function getFormSettings() {
+  private function getFormSettings() {
     if (empty($this->settings)) {
       $settings = civicrm_api3('Setting', 'getfields', array('filters' => $this->settingFilter));
     }
@@ -78,7 +79,7 @@ class CRM_Utmaltor_Form_Settings extends CRM_Core_Form {
   /**
    * Get the settings we are going to allow to be set on this form.
    */
-  function saveSettings() {
+  private function saveSettings() {
     $settings = $this->getFormSettings();
     $values = array_intersect_key($this->submittedValues, $settings);
     civicrm_api3('Setting', 'create', $values);
@@ -90,7 +91,7 @@ class CRM_Utmaltor_Form_Settings extends CRM_Core_Form {
    *
    * @see CRM_Core_Form::setDefaultValues()
    */
-  function setDefaultValues() {
+  public function setDefaultValues() {
     $existing = civicrm_api3('Setting', 'get', array('return' => array_keys($this->getFormSettings())));
     $defaults = array();
     $domainID = CRM_Core_Config::domainID();
@@ -99,4 +100,5 @@ class CRM_Utmaltor_Form_Settings extends CRM_Core_Form {
     }
     return $defaults;
   }
+
 }

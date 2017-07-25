@@ -4,16 +4,16 @@ class CRM_Utmaltor_Logic_Smarty {
 
   public $variables = array();
 
-  private $smarty = null;
+  private $smarty = NULL;
 
   private $smartyCache;
 
-  private static $instance = false;
+  private static $instance = FALSE;
 
   private static $instanceParams = array();
 
   public static function singleton($params) {
-    if (self::$instance == false || self::hasNewParams($params)) {
+    if (self::$instance == FALSE || self::hasNewParams($params)) {
       self::$instanceParams = $params;
       self::$instance = new CRM_Utmaltor_Logic_Smarty($params);
     }
@@ -23,14 +23,14 @@ class CRM_Utmaltor_Logic_Smarty {
   private static function hasNewParams($params) {
     /* assumption: $params never be empty */
     if (empty(self::$instanceParams)) {
-      return true;
+      return TRUE;
     }
     /* Assumption: this class uses smarty only with variables listed in $variables */
-    if (self::$instanceParams['id'] == $params['id'] 
+    if (self::$instanceParams['id'] == $params['id']
         && self::$instanceParams['campaign_id'] == $params['campaign_id']) {
-      return false;
+      return FALSE;
     }
-    return true;
+    return TRUE;
   }
 
   private function __construct($params) {
@@ -61,4 +61,5 @@ class CRM_Utmaltor_Logic_Smarty {
     $locale = $campaign->getLanguage();
     return strtoupper(substr($locale, 0, 2));
   }
+
 }

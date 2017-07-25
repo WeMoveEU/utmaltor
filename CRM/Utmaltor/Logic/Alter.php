@@ -10,35 +10,35 @@ class CRM_Utmaltor_Logic_Alter {
     return $url;
   }
 
-  function fixUrl($url) {
+  private static function fixUrl($url) {
     return str_replace('&amp;', '&', $url);
   }
 
-  function alterSource($url, $smarty) {
+  private static function alterSource($url, $smarty) {
     $key = 'utm_source';
     $value = CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_source');
     $value = $smarty->parse($value);
-    $override = (boolean)CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_source_override');
+    $override = (boolean) CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_source_override');
     return self::setKey($url, $key, $value, $override);
   }
 
-  function alterMedium($url, $smarty) {
+  private static function alterMedium($url, $smarty) {
     $key = 'utm_medium';
     $value = CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_medium');
     $value = $smarty->parse($value);
-    $override = (boolean)CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_medium_override');
+    $override = (boolean) CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_medium_override');
     return self::setKey($url, $key, $value, $override);
   }
 
-  function alterCampaign($url, $smarty) {
+  private static function alterCampaign($url, $smarty) {
     $key = 'utm_campaign';
     $value = CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_campaign');
     $value = $smarty->parse($value);
-    $override = (boolean)CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_campaign_override');
+    $override = (boolean) CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_campaign_override');
     return self::setKey($url, $key, $value, $override);
   }
 
-  function setKey($url, $key, $value, $override = FALSE) {
+  private static function setKey($url, $key, $value, $override = FALSE) {
     if ($override) {
       return self::setValue($url, $key, $value);
     }
@@ -48,7 +48,7 @@ class CRM_Utmaltor_Logic_Alter {
     return $url;
   }
 
-  function getValue($url, $key) {
+  private static function getValue($url, $key) {
     $query = parse_url($url, PHP_URL_QUERY);
     parse_str($query, $arr);
     if (array_key_exists($key, $arr)) {
@@ -57,11 +57,12 @@ class CRM_Utmaltor_Logic_Alter {
     return "";
   }
 
-  function setValue($url, $key, $value) {
+  private static function setValue($url, $key, $value) {
     $urlParts = parse_url($url);
     if (array_key_exists('query', $urlParts)) {
       parse_str($urlParts['query'], $query);
-    } else {
+    }
+    else {
       $query = array();
     }
     if (!array_key_exists('path', $urlParts)) {
@@ -81,4 +82,5 @@ class CRM_Utmaltor_Logic_Alter {
     $newUrl = str_replace(array_keys($tokens), array_values($tokens), $newUrl);
     return $newUrl;
   }
+
 }

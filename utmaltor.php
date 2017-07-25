@@ -110,7 +110,7 @@ function utmaltor_civicrm_caseTypes(&$caseTypes) {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_caseTypes
  */
 function utmaltor_civicrm_angularModules(&$angularModules) {
-_utmaltor_civix_civicrm_angularModules($angularModules);
+  _utmaltor_civix_civicrm_angularModules($angularModules);
 }
 
 /**
@@ -138,7 +138,7 @@ function utmaltor_civicrm_pre($op, $objectName, $id, &$params) {
     }
     foreach ($urls as $old => $new) {
       if ($old != $new) {
-        $params['body_html'] = str_replace('href="'.$old.'"', 'href="'.$new.'"', $params['body_html']);
+        $params['body_html'] = str_replace('href="' . $old . '"', 'href="' . $new . '"', $params['body_html']);
       }
     }
   }
@@ -165,7 +165,8 @@ function utmaltor_civicrm_alterUrl(&$url, $params) {
 
   if ($url2) {
     $url = $url2;
-  } elseif ($url1) {
+  }
+  elseif ($url1) {
     $url = $url1;
   }
 }
