@@ -69,4 +69,18 @@ class CRM_Utmaltor_AlterTest extends CRM_Utmaltor_BaseTest {
     $this->assertEquals($expectedUrl, $actualUrl);
   }
 
+  public function testAlterUrlWithAdditionalParams() {
+    $url = 'https://www.wemove.eu/test?var1=111&var2=222';
+    $expectedUrl = implode('', [
+      'https://www.wemove.eu/test?var1=111&var2=222&utm_source=',
+      $this->utmSmarty->parse($this->source),
+      '&utm_medium=',
+      $this->utmSmarty->parse($this->medium),
+      '&utm_campaign=',
+      $this->utmSmarty->parse($this->campaign),
+    ]);
+    $actualUrl = \CRM_Utmaltor_Logic_Alter::url($url, $this->utmSmarty);
+    $this->assertEquals($expectedUrl, $actualUrl);
+  }
+
 }
