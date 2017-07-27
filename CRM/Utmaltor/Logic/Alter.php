@@ -70,7 +70,7 @@ class CRM_Utmaltor_Logic_Alter {
     }
     $urlParts['query'] = http_build_query($query ? array_merge($query, array($key => $value)) : array($key => $value));
     $newUrl = $urlParts['scheme'] . '://' . $urlParts['host'] . $urlParts['path'] . '?' . $urlParts['query'];
-    if ($urlParts['fragment']) {
+    if (array_key_exists('fragment', $urlParts) && $urlParts['fragment']) {
       $newUrl .= '#' . $urlParts['fragment'];
     }
     $tokens = array(
