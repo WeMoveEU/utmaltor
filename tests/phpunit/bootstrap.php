@@ -1,5 +1,9 @@
 <?php
 
+require_once __DIR__ . '/../../../speakcivi/CRM/Speakcivi/Logic/Campaign.php';
+require_once __DIR__ . '/../../../speakcivi/CRM/Speakcivi/Logic/Cache.php';
+require_once __DIR__ . '/../../../speakcivi/CRM/Speakcivi/Logic/Cache/Campaign.php';
+
 ini_set('memory_limit', '2G');
 ini_set('safe_mode', 0);
 eval(cv('php:boot --level=classloader', 'phpcode'));
