@@ -160,7 +160,7 @@ function utmaltor_civicrm_alterUrl(&$url, $params) {
   $re = '/href="(http[^\s"]+(' . $domains . ')[^\s"]*)/imu';
   if (preg_match($re, $url, $urlMatches)) {
     $url2 = CRM_Utmaltor_Logic_Alter::url($urlMatches[1], $utmSmarty);
-    $url2 = "href='" . $url2 . "'";
+    $url2 = 'href="' . $url2 . '"';
   }
 
   if ($url2) {
