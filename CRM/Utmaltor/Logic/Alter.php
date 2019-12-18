@@ -1,26 +1,27 @@
 <?php
 
-private $smarty;
-
 class CRM_Utmaltor_Logic_Alter {
-  function __construct($params) {
+
+  private $smarty;
+
+  public function __construct($params) {
     $this->smarty = CRM_Utmaltor_Logic_Smarty::singleton($params);
   }
 
-  public static function url($urlMatches, $smarty = $this->smarty) {
+  public function url($urlMatches) {
     $url = $urlMatches[1];
     $url = self::fixUrl($url);
-    $url = self::alterSource($url, $smarty);
-    $url = self::alterMedium($url, $smarty);
-    $url = self::alterCampaign($url, $smarty);
+    $url = self::alterSource($url, $this->smarty);
+    $url = self::alterMedium($url, $this->smarty);
+    $url = self::alterCampaign($url, $this->smarty);
     return $url;
   }
 
-  private static function fixUrl($url) {
+  private function fixUrl($url) {
     return str_replace('&amp;', '&', $url);
   }
 
-  private static function alterSource($url, $smarty) {
+  private function alterSource($url, $smarty) {
     $key = 'utm_source';
     $value = CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_source');
     $value = $smarty->parse($value);
@@ -28,7 +29,7 @@ class CRM_Utmaltor_Logic_Alter {
     return self::setKey($url, $key, $value, $override);
   }
 
-  private static function alterMedium($url, $smarty) {
+  private function alterMedium($url, $smarty) {
     $key = 'utm_medium';
     $value = CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_medium');
     $value = $smarty->parse($value);
@@ -36,7 +37,7 @@ class CRM_Utmaltor_Logic_Alter {
     return self::setKey($url, $key, $value, $override);
   }
 
-  private static function alterCampaign($url, $smarty) {
+  private function alterCampaign($url, $smarty) {
     $key = 'utm_campaign';
     $value = CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_campaign');
     $value = $smarty->parse($value);
@@ -44,7 +45,7 @@ class CRM_Utmaltor_Logic_Alter {
     return self::setKey($url, $key, $value, $override);
   }
 
-  private static function setKey($url, $key, $value, $override = FALSE) {
+  private function setKey($url, $key, $value, $override = FALSE) {
     if ($override) {
       return self::setValue($url, $key, $value);
     }
@@ -54,7 +55,7 @@ class CRM_Utmaltor_Logic_Alter {
     return $url;
   }
 
-  private static function getValue($url, $key) {
+  private function getValue($url, $key) {
     $query = parse_url($url, PHP_URL_QUERY);
     parse_str($query, $arr);
     if (array_key_exists($key, $arr)) {
@@ -63,7 +64,7 @@ class CRM_Utmaltor_Logic_Alter {
     return "";
   }
 
-  private static function setValue($url, $key, $value) {
+  private function setValue($url, $key, $value) {
     $urlParts = parse_url($url);
     if (array_key_exists('query', $urlParts)) {
       parse_str($urlParts['query'], $query);
