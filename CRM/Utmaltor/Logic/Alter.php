@@ -1,8 +1,14 @@
 <?php
 
-class CRM_Utmaltor_Logic_Alter {
+private $smarty;
 
-  public static function url($url, $smarty) {
+class CRM_Utmaltor_Logic_Alter {
+  function __construct($params) {
+    $this->smarty = CRM_Utmaltor_Logic_Smarty::singleton($params);
+  }
+
+  public static function url($urlMatches, $smarty = $this->smarty) {
+    $url = $urlMatches[1];
     $url = self::fixUrl($url);
     $url = self::alterSource($url, $smarty);
     $url = self::alterMedium($url, $smarty);

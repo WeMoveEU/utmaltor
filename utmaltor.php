@@ -14,8 +14,6 @@ function utmaltor_civicrm_config(&$config) {
 /**
  * Implements hook_civicrm_xmlMenu().
  *
- * @param $files array(string)
- *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_xmlMenu
  */
 function utmaltor_civicrm_xmlMenu(&$files) {
@@ -60,13 +58,6 @@ function utmaltor_civicrm_disable() {
 
 /**
  * Implements hook_civicrm_upgrade().
- *
- * @param $op string, the type of operation being performed; 'check' or 'enqueue'
- * @param $queue CRM_Queue_Queue, (for 'enqueue') the modifiable list of pending up upgrade tasks
- *
- * @return mixed
- *   Based on op. for 'check', returns array(boolean) (TRUE if upgrades are pending)
- *                for 'enqueue', returns void
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_upgrade
  */
@@ -122,30 +113,28 @@ function utmaltor_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
   _utmaltor_civix_civicrm_alterSettingsFolders($metaDataFolders);
 }
 
+// function utmaltor_civicrm_pre($op, $objectName, $id, &$params) {
+//   if ($objectName == 'Mailing' and $op == 'edit') {
+//     $domains = CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_domains');
+//     $domains = str_replace('.', '\.', $domains);
+//     $pattern = '/href="(http[^\s"]+(' . $domains . ')[^\s"]*)/imu';
+//     preg_match_all($pattern, $params['body_html'], $matches);
+//     $urls = array();
+//     if (is_array($matches[1]) && count($matches[1])) {
+//       $utmSmarty = CRM_Utmaltor_Logic_Smarty::singleton($params);
+//       foreach ($matches[1] as $url) {
+//         $urls[$url] = CRM_Utmaltor_Logic_Alter::url($url, $utmSmarty);
+//       }
+//     }
+//     foreach ($urls as $old => $new) {
+//       if ($old != $new) {
+//         $params['body_html'] = str_replace('href="' . $old . '"', 'href="' . $new . '"', $params['body_html']);
+//       }
+//     }
+//   }
+// }
 
-function utmaltor_civicrm_pre($op, $objectName, $id, &$params) {
-  if ($objectName == 'Mailing' and $op == 'edit') {
-    $domains = CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_domains');
-    $domains = str_replace('.', '\.', $domains);
-    $pattern = '/href="(http[^\s"]+(' . $domains . ')[^\s"]*)/imu';
-    preg_match_all($pattern, $params['body_html'], $matches);
-    $urls = array();
-    if (is_array($matches[1]) && count($matches[1])) {
-      $utmSmarty = CRM_Utmaltor_Logic_Smarty::singleton($params);
-      foreach ($matches[1] as $url) {
-        $urls[$url] = CRM_Utmaltor_Logic_Alter::url($url, $utmSmarty);
-      }
-    }
-    foreach ($urls as $old => $new) {
-      if ($old != $new) {
-        $params['body_html'] = str_replace('href="' . $old . '"', 'href="' . $new . '"', $params['body_html']);
-      }
-    }
-  }
-}
-
-
-function utmaltor_civicrm_alterUrl(&$url, $params) {
+function utmaltor_civicrm_alterUrl($matches) {
   $utmSmarty = CRM_Utmaltor_Logic_Smarty::singleton($params);
   $domains = CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_domains');
   $domains = str_replace('.', '\.', $domains);
@@ -169,4 +158,37 @@ function utmaltor_civicrm_alterUrl(&$url, $params) {
   elseif ($url1) {
     $url = $url1;
   }
+}
+
+function utmaltor_civicrm_container($container) {
+  $container->addResource(new \Symfony\Component\Config\Resource\FileResource(__FILE__));
+  $container->findDefinition('dispatcher')->addMethodCall('addListener',
+    [\Civi\FlexMailer\FlexMailer::EVENT_RUN, '_utmaltor_RunEvent_alterUrl']
+  );
+}
+
+/**
+ * We really want to alter URLs on "composeBatchEvent" but on traditional emails,
+ * it's never run because of the Abdicator listener.
+ * So let's worry about Mosaico-specific UTM alterations later.
+ */
+function _utmaltor_alterUrl(\Civi\FlexMailer\Event\ComposeBatchEvent $event) {
+  $temp = 1;
+}
+
+function _utmaltor_RunEvent_alterUrl(\Civi\FlexMailer\Event\RunEvent $event) {
+  $mailing = $event->getMailing();
+  $bodyHtml = $mailing->body_html;
+  $params = ['id' => $mailing->id, 'campaign_id' => $mailing->campaign_id];
+  $temp = _utmaltor_findUrls($bodyHtml, $params);
+  $temp2 = 1;
+}
+
+function _utmaltor_findUrls($text, $params) {
+  $domains = CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_domains');
+  $domains = str_replace('.', '\.', $domains);
+  $re = '/(http[^\s"]+(' . $domains . ')[^\s"]*)/imu';
+  $callback = new CRM_Utmaltor_Logic_Alter;
+  preg_replace_callback($re, [$callback, 'url'], $text);
+  $temp2 = 1;
 }
