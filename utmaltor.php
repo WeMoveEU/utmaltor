@@ -154,7 +154,7 @@ function _utmaltor_RunEvent_alterUrl(\Civi\FlexMailer\Event\RunEvent $event) {
 function _utmaltor_findUrls(&$text, $params) {
   $domains = CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_domains');
   $domains = str_replace('.', '\.', $domains);
-  $re = '/(http[^\s"]+(' . $domains . ')[^\s"]*)/imu';
+  $re = '/(http[^\s"]+(' . $domains . ')[^\s"<]*)/imu';
   $callback = new CRM_Utmaltor_Logic_Alter($params);
   $text = preg_replace_callback($re, [$callback, 'url'], $text);
   return $text;
