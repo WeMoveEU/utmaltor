@@ -135,14 +135,17 @@ function _utmaltor_RunEvent_alterUrl(\Civi\FlexMailer\Event\RunEvent $event) {
   $params = ['id' => $mailing->id, 'campaign_id' => $mailing->campaign_id];
   $mailing->body_html = _utmaltor_findUrls($mailing->body_html, $params);
   $mailing->body_text = _utmaltor_findUrls($mailing->body_text, $params);
+
   /* If using the traditional mailer, the mailing will be pulled straight from the db,
-  not from the changes we just made.  So let's update the db. */
+  not from the changes we just made.  So let's update the db. Need to do it with direct sql
+  so we can avoid updating the modified_date timestamp. */
   if ($mailing->template_type && $mailing->template_type == 'traditional') {
-    civicrm_api3('Mailing', 'create', [
-      'id' => $mailing->id,
-      'body_html' => $mailing->body_html,
-      'body_test' => $mailing->body_text,
-    ]);
+    $sql = 'UPDATE civicrm_mailing SET body_html = %1, body_text = %2, modified_date = modified_date';
+    $params = [
+      1 => [$mailing->body_html, 'String'],
+      2 => [$mailing->body_text, 'String'],
+    ];
+    \CRM_Core_DAO::executeQuery($sql, $params);
   }
 }
 
