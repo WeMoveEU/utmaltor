@@ -132,7 +132,7 @@ function utmaltor_civicrm_container($container) {
  */
 function _utmaltor_RunEvent_alterUrl(\Civi\FlexMailer\Event\RunEvent $event) {
   $mailing = $event->getMailing();
-  $params = ['id' => $mailing->id, 'campaign_id' => $mailing->campaign_id];
+  $params = ['mailing_id' => $mailing->id, 'campaign_id' => $mailing->campaign_id, 'subject' => $mailing->subject];
   $mailing->body_html = _utmaltor_findUrls($mailing->body_html, $params);
   $mailing->body_text = _utmaltor_findUrls($mailing->body_text, $params);
 
