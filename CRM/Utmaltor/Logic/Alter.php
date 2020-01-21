@@ -10,10 +10,10 @@ class CRM_Utmaltor_Logic_Alter {
 
   public function url($urlMatches) {
     $url = $urlMatches[1];
-    $url = self::fixUrl($url);
-    $url = self::alterSource($url, $this->smarty);
-    $url = self::alterMedium($url, $this->smarty);
-    $url = self::alterCampaign($url, $this->smarty);
+    $url = $this->fixUrl($url);
+    $url = $this->alterSource($url, $this->smarty);
+    $url = $this->alterMedium($url, $this->smarty);
+    $url = $this->alterCampaign($url, $this->smarty);
     return $url;
   }
 
@@ -21,36 +21,36 @@ class CRM_Utmaltor_Logic_Alter {
     return str_replace('&amp;', '&', $url);
   }
 
-  private function alterSource($url, $smarty) {
+  private function alterSource($url, CRM_Utmaltor_Logic_Smarty $smarty) {
     $key = 'utm_source';
     $value = CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_source');
     $value = $smarty->parse($value);
     $override = (boolean) CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_source_override');
-    return self::setKey($url, $key, $value, $override);
+    return $this->setKey($url, $key, $value, $override);
   }
 
-  private function alterMedium($url, $smarty) {
+  private function alterMedium($url, CRM_Utmaltor_Logic_Smarty $smarty) {
     $key = 'utm_medium';
     $value = CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_medium');
     $value = $smarty->parse($value);
     $override = (boolean) CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_medium_override');
-    return self::setKey($url, $key, $value, $override);
+    return $this->setKey($url, $key, $value, $override);
   }
 
-  private function alterCampaign($url, $smarty) {
+  private function alterCampaign($url, CRM_Utmaltor_Logic_Smarty $smarty) {
     $key = 'utm_campaign';
     $value = CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_campaign');
     $value = $smarty->parse($value);
     $override = (boolean) CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_campaign_override');
-    return self::setKey($url, $key, $value, $override);
+    return $this->setKey($url, $key, $value, $override);
   }
 
   private function setKey($url, $key, $value, $override = FALSE) {
     if ($override) {
-      return self::setValue($url, $key, $value);
+      return $this->setValue($url, $key, $value);
     }
-    if ((strpos($url, $key) === FALSE) || (strpos($url, $key) !== FALSE && !self::getValue($url, $key))) {
-      return self::setValue($url, $key, $value);
+    if ((strpos($url, $key) === FALSE) || (strpos($url, $key) !== FALSE && !$this->getValue($url, $key))) {
+      return $this->setValue($url, $key, $value);
     }
     return $url;
   }
