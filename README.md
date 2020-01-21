@@ -9,7 +9,7 @@ When user pastes a link to own website, the link will be extended with `utm_sour
 
 ## Settings
 
-Settings are available on page `/civicrm/utmaltor/settings`.
+Settings are available on page `/civicrm/setting/utmaltor`.
 
 ### domains
 
