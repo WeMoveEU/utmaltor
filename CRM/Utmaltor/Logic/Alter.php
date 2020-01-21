@@ -23,25 +23,25 @@ class CRM_Utmaltor_Logic_Alter {
 
   private function alterSource($url, CRM_Utmaltor_Logic_Smarty $smarty) {
     $key = 'utm_source';
-    $value = CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_source');
+    $value = Civi::settings()->get('utmaltor_source');
     $value = $smarty->parse($value);
-    $override = (boolean) CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_source_override');
+    $override = (boolean) Civi::settings()->get('utmaltor_source_override');
     return $this->setKey($url, $key, $value, $override);
   }
 
   private function alterMedium($url, CRM_Utmaltor_Logic_Smarty $smarty) {
     $key = 'utm_medium';
-    $value = CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_medium');
+    $value = Civi::settings()->get('utmaltor_medium');
     $value = $smarty->parse($value);
-    $override = (boolean) CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_medium_override');
+    $override = (boolean) Civi::settings()->get('utmaltor_medium_override');
     return $this->setKey($url, $key, $value, $override);
   }
 
   private function alterCampaign($url, CRM_Utmaltor_Logic_Smarty $smarty) {
     $key = 'utm_campaign';
-    $value = CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_campaign');
+    $value = Civi::settings()->get('utmaltor_campaign');
     $value = $smarty->parse($value);
-    $override = (boolean) CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_campaign_override');
+    $override = (boolean) Civi::settings()->get('utmaltor_campaign_override');
     return $this->setKey($url, $key, $value, $override);
   }
 

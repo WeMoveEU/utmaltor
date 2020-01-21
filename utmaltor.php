@@ -173,7 +173,7 @@ function utmaltor_civicrm_post($op, $objectName, $id, &$params) {
  * @var $params array Parameters to pass to the Smarty singleton for rendering as a token.
  */
 function _utmaltor_findUrls($text, $params) {
-  $domains = CRM_Core_BAO_Setting::getItem('UTMaltor Preferences', 'utmaltor_domains');
+  $domains = Civi::settings()->get('utmaltor_domains');
   $domains = str_replace('.', '\.', $domains);
   $re = '/(http[^\s"]+(' . $domains . ')[^\s"<]*)/imu';
   $callback = new CRM_Utmaltor_Logic_Alter($params);
