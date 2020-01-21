@@ -20,17 +20,15 @@ class CRM_Utmaltor_Logic_Smarty {
     return self::$instance;
   }
 
+  /**
+   * Check whether params has new values.
+   *
+   * @param array $params
+   *
+   * @return bool
+   */
   private static function hasNewParams($params) {
-    /* assumption: $params never be empty */
-    if (empty(self::$instanceParams)) {
-      return TRUE;
-    }
-    /* Assumption: this class uses smarty only with variables listed in $variables */
-    if (self::$instanceParams['id'] == $params['id']
-        && self::$instanceParams['campaign_id'] == $params['campaign_id']) {
-      return FALSE;
-    }
-    return TRUE;
+    return !!array_diff($params, self::$instanceParams);
   }
 
   private function __construct($params) {
