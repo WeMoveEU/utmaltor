@@ -120,11 +120,11 @@ function utmaltor_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
  */
 function utmaltor_civicrm_container($container) {
   // Add a Symfony listener on civi.flexmailer.run. See Flexmailer dev docs for details.
-//  $container->addResource(new \Symfony\Component\Config\Resource\FileResource(__FILE__));
-//  $container->findDefinition('dispatcher')->addMethodCall('addListener',
-//    [\Civi\FlexMailer\FlexMailer::EVENT_RUN, '_utmaltor_RunEvent_alterUrl'],
-//    \Civi\FlexMailer\FlexMailer::WEIGHT_START
-//  );
+  $container->addResource(new \Symfony\Component\Config\Resource\FileResource(__FILE__));
+  $container->findDefinition('dispatcher')->addMethodCall('addListener',
+    [\Civi\FlexMailer\FlexMailer::EVENT_RUN, '_utmaltor_RunEvent_alterUrl'],
+    \Civi\FlexMailer\FlexMailer::WEIGHT_START
+  );
 }
 
 /**
@@ -150,12 +150,12 @@ function _utmaltor_RunEvent_alterUrl(\Civi\FlexMailer\Event\RunEvent $event) {
   }
 }
 
-function utmaltor_civicrm_pre($op, $objectName, $id, &$params) {
+function utmaltor_civicrm_post($op, $objectName, $id, &$params) {
   if ($objectName == 'Mailing' && $op = 'edit') {
-    $utmParams = ['mailing_id' => $id, 'campaign_id' => $params['campaign_id'], 'subject' => $params['subject']];
-    $newBodyHtml = _utmaltor_findUrls($params['body_html'], $utmParams);
-    $newBodyText = _utmaltor_findUrls($params['body_text'], $utmParams);
-    if ($params['body_html'] != $newBodyHtml) {
+    $utmParams = ['mailing_id' => $id, 'campaign_id' => $params->campaign_id, 'subject' => $params->subject];
+    $newBodyHtml = _utmaltor_findUrls($params->body_html, $utmParams);
+    $newBodyText = _utmaltor_findUrls($params->body_text, $utmParams);
+    if ($params->body_html != $newBodyHtml) {
       $sql = 'UPDATE civicrm_mailing SET body_html = %1, body_text = %2, modified_date = modified_date WHERE id = %3';
       $sqlParams = [
         1 => [$newBodyHtml, 'String'],
