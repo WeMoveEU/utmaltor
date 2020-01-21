@@ -169,8 +169,12 @@ function utmaltor_civicrm_post($op, $objectName, $id, &$params) {
 
 /**
  * This identifies and modifies the URLs found in the passed $text.
- * @var $text string The body of the email to search for URLs.
- * @var $params array Parameters to pass to the Smarty singleton for rendering as a token.
+ *
+ * @param string $text string The body of the email to search for URLs.
+ * @param array $params Parameters to pass to the Smarty singleton for rendering
+ *   as a token.
+ *
+ * @return string|string[]|null
  */
 function _utmaltor_findUrls($text, $params) {
   $domains = Civi::settings()->get('utmaltor_domains');
@@ -178,5 +182,6 @@ function _utmaltor_findUrls($text, $params) {
   $re = '/(http[^\s"]+(' . $domains . ')[^\s"<]*)/imu';
   $callback = new CRM_Utmaltor_Logic_Alter($params);
   $text = preg_replace_callback($re, [$callback, 'url'], $text);
+
   return $text;
 }
