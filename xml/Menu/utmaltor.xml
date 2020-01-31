@@ -5,5 +5,6 @@
     <page_callback>CRM_Admin_Form_Generic</page_callback>
     <title>UTMaltor Settings</title>
     <access_arguments>administer CiviCRM</access_arguments>
+    <adminGroup>CiviMail</adminGroup>
   </item>
 </menu>
