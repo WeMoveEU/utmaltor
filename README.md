@@ -25,7 +25,15 @@ It's possible to use variables in [Smarty](http://www.smarty.net) format.
 
 ## UTM in footer
 
-This feature works based on not published hook `hook_civicrm_alterUrl`, yet.
+This feature works based on `hook_civicrm_alterMailContent`. There is needed a small patch to civicrm-core in order to have mailing_id and campaign_id visible by utmaltor.
+
+```php
+// todo add these lines in body of CRM_Mailing_BAO_Mailing::getTemplates() function
++ $this->templates['mailing_id'] = $this->id;
++ $this->templates['campaign_id'] = $this->campaign_id;
+
+CRM_Utils_Hook::alterMailContent($this->templates);
+```
 
 Required configuration for CKEditor:
 

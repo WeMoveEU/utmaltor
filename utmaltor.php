@@ -114,11 +114,21 @@ function utmaltor_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
 }
 
 /**
+ * Implements hook_civicrm_alterMailContent().
+ */
+function utmaltor_civicrm_alterMailContent(&$content) {
+  // fixme mailing_id and campaign_id is added via patch to civicrm-core
+  $utmParams = ['mailing_id' => $content['mailing_id'], 'campaign_id' => $content['campaign_id'], 'subject' => $content['subject']];
+  $content['html'] = _utmaltor_findUrls($content['html'], $utmParams);
+  $content['text'] = _utmaltor_findUrls($content['text'], $utmParams);
+}
+
+/**
  * Implements hook_civicrm_container().
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_container
  */
-function utmaltor_civicrm_container($container) {
+function utmaltor_civicrm_container(\Symfony\Component\DependencyInjection\ContainerBuilder $container) {
   // Add a Symfony listener on civi.flexmailer.run. See Flexmailer dev docs for details.
   $container->addResource(new \Symfony\Component\Config\Resource\FileResource(__FILE__));
   $container->findDefinition('dispatcher')->addMethodCall('addListener',
