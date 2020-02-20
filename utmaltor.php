@@ -114,52 +114,8 @@ function utmaltor_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
 }
 
 /**
- * Implements hook_civicrm_alterMailContent().
+ * Implements hook_civicrm_post().
  */
-function utmaltor_civicrm_alterMailContent(&$content) {
-  // fixme mailing_id and campaign_id is added via patch to civicrm-core
-  $utmParams = ['mailing_id' => $content['mailing_id'], 'campaign_id' => $content['campaign_id'], 'subject' => $content['subject']];
-  $content['html'] = _utmaltor_findUrls($content['html'], $utmParams);
-  $content['text'] = _utmaltor_findUrls($content['text'], $utmParams);
-}
-
-/**
- * Implements hook_civicrm_container().
- *
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_container
- */
-function utmaltor_civicrm_container(\Symfony\Component\DependencyInjection\ContainerBuilder $container) {
-  // Add a Symfony listener on civi.flexmailer.run. See Flexmailer dev docs for details.
-  $container->addResource(new \Symfony\Component\Config\Resource\FileResource(__FILE__));
-  $container->findDefinition('dispatcher')->addMethodCall('addListener',
-    [\Civi\FlexMailer\FlexMailer::EVENT_RUN, '_utmaltor_RunEvent_alterUrl'],
-    \Civi\FlexMailer\FlexMailer::WEIGHT_START
-  );
-}
-
-/**
- * Alter the URLs in the mailing body.
- */
-function _utmaltor_RunEvent_alterUrl(\Civi\FlexMailer\Event\RunEvent $event) {
-  $mailing = $event->getMailing();
-  $params = ['mailing_id' => $mailing->id, 'campaign_id' => $mailing->campaign_id, 'subject' => $mailing->subject];
-  $mailing->body_html = _utmaltor_findUrls($mailing->body_html, $params);
-  $mailing->body_text = _utmaltor_findUrls($mailing->body_text, $params);
-
-  /* If using the traditional mailer, the mailing will be pulled straight from the db,
-  not from the changes we just made.  So let's update the db. Need to do it with direct sql
-  so we can avoid updating the modified_date timestamp. */
-  if ($mailing->template_type && $mailing->template_type == 'traditional') {
-    $sql = 'UPDATE civicrm_mailing SET body_html = %1, body_text = %2, modified_date = modified_date WHERE id = %3';
-    $params = [
-      1 => [$mailing->body_html, 'String'],
-      2 => [$mailing->body_text, 'String'],
-      3 => [$mailing->id, 'Integer']
-    ];
-    \CRM_Core_DAO::executeQuery($sql, $params);
-  }
-}
-
 function utmaltor_civicrm_post($op, $objectName, $id, &$params) {
   if ($objectName == 'Mailing' && $op = 'edit') {
     $utmParams = ['mailing_id' => $id, 'campaign_id' => $params->campaign_id, 'subject' => $params->subject];
@@ -175,6 +131,19 @@ function utmaltor_civicrm_post($op, $objectName, $id, &$params) {
       \CRM_Core_DAO::executeQuery($sql, $sqlParams);
     }
   }
+}
+
+/**
+ * Implements hook_civicrm_alterMailContent().
+ */
+function utmaltor_civicrm_alterMailContent(&$content) {
+  /**
+   * mailing_id and campaign_id is added via patch to civicrm-core
+   * in CRM_Mailing_BAO_Mailing->getTemplates() method
+   */
+  $utmParams = ['mailing_id' => $content['mailing_id'], 'campaign_id' => $content['campaign_id'], 'subject' => $content['subject']];
+  $content['html'] = _utmaltor_findUrls($content['html'], $utmParams);
+  $content['text'] = _utmaltor_findUrls($content['text'], $utmParams);
 }
 
 /**
