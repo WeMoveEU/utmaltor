@@ -138,10 +138,16 @@ function utmaltor_civicrm_post($op, $objectName, $id, &$params) {
  */
 function utmaltor_civicrm_alterMailContent(&$content) {
   /**
-   * mailing_id and campaign_id is added via patch to civicrm-core
+   * WARNING!
+   *
+   * campaign_id is added via patch to civicrm-core
    * in CRM_Mailing_BAO_Mailing->getTemplates() method
+   *   $this->templates['mailingID'] = $this->id;
+   * + $this->templates['campaign_id'] = $this->campaign_id;
+   *
+   * @link https://github.com/civicrm/civicrm-core/pull/16629
    */
-  $utmParams = ['mailing_id' => $content['mailing_id'], 'campaign_id' => $content['campaign_id'], 'subject' => $content['subject']];
+  $utmParams = ['mailing_id' => $content['mailingID'], 'campaign_id' => $content['campaign_id'], 'subject' => $content['subject']];
   $content['html'] = _utmaltor_findUrls($content['html'], $utmParams);
   $content['text'] = _utmaltor_findUrls($content['text'], $utmParams);
 }
