@@ -138,10 +138,7 @@ function utmaltor_civicrm_post($op, $objectName, $id, &$params) {
  */
 function utmaltor_civicrm_alterMailContent(&$content) {
   /**
-   * WARNING!
-   *
-   * campaign_id is added via patch to civicrm-core
-   * in CRM_Mailing_BAO_Mailing->getTemplates() method
+   * in CRM_Mailing_BAO_Mailing->getTemplates() method are
    *   $this->templates['mailingID'] = $this->id;
    * + $this->templates['campaign_id'] = $this->campaign_id;
    *
